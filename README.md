@@ -49,6 +49,21 @@ npm start
 ש**כל `git push` פורס מחדש אוטומטית** — בדיוק כמו אתר חי. הריפו כבר כולל את כל
 קובצי הפריסה (`render.yaml`, `railway.json`, `Dockerfile`, `Procfile`).
 
+### 🚀 פריסה בלחיצה אחת
+
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template?template=https%3A%2F%2Fgithub.com%2FMikeHolon%2FMondiel)
+&nbsp;
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/MikeHolon/Mondiel)
+
+> הכפתורים פורסים ישירות מהריפו הציבורי — שימושי גם אם הריפו לא מופיע ברשימה
+> בתוך Railway/Render.
+
+> **הריפו לא מופיע ברשימה ב-Railway?** זו בעיית הרשאות נפוצה: צריך לתת לאפליקציית
+> Railway גישה לריפו ב-GitHub. בעמוד בחירת הריפו לחצו על **"Configure GitHub App"**,
+> ותחת **Repository access** בחרו **All repositories** או הוסיפו את `Mondiel`,
+> ושמרו. לאחר רענון הריפו יופיע. קישור ישיר:
+> https://github.com/apps/railway/installations/new
+
 ### אפשרות א' — Railway (מומלץ: חינמי, נתונים נשמרים, ללא "הירדמות")
 
 1. היכנסו ל-[railway.app](https://railway.app) והתחברו עם GitHub.
