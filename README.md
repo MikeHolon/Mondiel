@@ -43,16 +43,43 @@ npm start
 3. כולם מנחשים תוצאות לפני המשחקים.
 4. **המנהל** מעדכן תוצאות במסך הניהול → הניקוד והטבלה מתעדכנים אצל כולם בזמן אמת.
 
-## 🌐 פריסה (Deploy)
+## 🌐 פריסה לאתר חי (Deploy מ-git)
 
-האפליקציה היא שרת Node יחיד שמגיש גם את ה-frontend, וקל לפרוס אותה לכל שירות
-(Render / Railway / Fly.io / VPS):
+האפליקציה היא שרת Node יחיד שמגיש גם את ה-frontend. היא מחוברת ל-git כך
+ש**כל `git push` פורס מחדש אוטומטית** — בדיוק כמו אתר חי. הריפו כבר כולל את כל
+קובצי הפריסה (`render.yaml`, `railway.json`, `Dockerfile`, `Procfile`).
+
+### אפשרות א' — Railway (מומלץ: חינמי, נתונים נשמרים, ללא "הירדמות")
+
+1. היכנסו ל-[railway.app](https://railway.app) והתחברו עם GitHub.
+2. **New Project ➜ Deploy from GitHub repo** ובחרו את הריפו הזה (`Mondiel`).
+3. Railway יזהה את האפליקציה (Node) ויפרוס לבד. בכרטיסיית **Variables**
+   הוסיפו: `DATA_DIR = /data`.
+4. כדי שהנתונים יישמרו לתמיד: **Settings ➜ Volumes ➜ New Volume**, Mount Path: `/data`.
+5. ב-**Settings ➜ Networking ➜ Generate Domain** תקבלו כתובת ציבורית — זהו האתר! 🎉
+
+> מעכשיו כל `git push` לענף שחיברתם יעדכן את האתר אוטומטית.
+
+### אפשרות ב' — Render (הכי מהיר ללחיצה)
+
+1. היכנסו ל-[render.com](https://render.com) והתחברו עם GitHub.
+2. **New ➜ Blueprint** ובחרו את הריפו הזה — Render יקרא את `render.yaml` לבד.
+3. אשרו ולחצו **Apply**. תוך דקות תקבלו כתובת `https://...onrender.com`.
+
+> ⚠️ בתוכנית החינמית של Render השרת "נרדם" אחרי ~15 דק' חוסר פעילות (התעוררות
+> לוקחת ~30 שניות), והנתונים עלולים להתאפס בהפעלה מחדש. לשמירת נתונים קבועה
+> הוסיפו **Disk** (Settings ➜ Disks, Mount Path `/var/data`) — זמין בתוכנית בתשלום,
+> או השתמשו ב-Railway עם Volume (אפשרות א').
+
+### אפשרות ג' — Docker (Fly.io / VPS / כל מקום)
 
 ```bash
-npm install && npm start   # פקודת ההפעלה
+docker build -t mondiel .
+docker run -p 3000:3000 -v mondiel-data:/app/data mondiel
 ```
 
-הקפידו על תיקיית `DATA_DIR` קבועה (volume) כדי שהנתונים יישמרו בין הפעלות.
+> בכל המקרים: כדי שהנתונים יישמרו בין הפעלות, הצביעו את `DATA_DIR` לתיקייה
+> על Volume/Disk קבוע.
 
 ## 🛠️ מבנה הפרויקט
 

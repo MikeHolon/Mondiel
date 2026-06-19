@@ -1,0 +1,22 @@
+# Render Blueprint — פריסה אוטומטית מ-git.
+# ב-Render: New ➜ Blueprint ➜ בחרו את הריפו הזה. כל git push יפרוס מחדש אוטומטית.
+services:
+  - type: web
+    name: mondiel-predictions
+    runtime: node
+    plan: free
+    region: frankfurt        # הקרוב ביותר לישראל. אפשר: oregon / singapore וכו'
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATA_DIR
+        value: /var/data      # נשמר רק אם מחברים Disk (ראו הערה למטה)
+
+    # 💾 לשמירת נתונים בין הפעלות (מומלץ לתחרות שרצה לאורך זמן):
+    # הוסיפו Disk בלוח הבקרה של Render (Settings ➜ Disks) עם Mount Path: /var/data
+    # (Disk זמין בתוכניות בתשלום). בתוכנית החינמית הנתונים עלולים להתאפס
+    # בהפעלה מחדש — לשמירה קבועה בחינם מומלץ Railway עם Volume (ראו README).
