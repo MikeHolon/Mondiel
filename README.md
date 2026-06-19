@@ -68,9 +68,9 @@ npm start
 
 1. היכנסו ל-[railway.app](https://railway.app) והתחברו עם GitHub.
 2. **New Project ➜ Deploy from GitHub repo** ובחרו את הריפו הזה (`Mondiel`).
-3. Railway יזהה את האפליקציה (Node) ויפרוס לבד. בכרטיסיית **Variables**
-   הוסיפו: `DATA_DIR = /data`.
-4. כדי שהנתונים יישמרו לתמיד: **Settings ➜ Volumes ➜ New Volume**, Mount Path: `/data`.
+3. Railway יבנה דרך ה-`Dockerfile` ויפרוס לבד.
+4. כדי שהנתונים יישמרו לתמיד: **Settings ➜ Volumes ➜ New Volume**, Mount Path: `/app/data`
+   (זו ברירת המחדל של `DATA_DIR` ב-Dockerfile — אין צורך במשתנה נוסף).
 5. ב-**Settings ➜ Networking ➜ Generate Domain** תקבלו כתובת ציבורית — זהו האתר! 🎉
 
 > מעכשיו כל `git push` לענף שחיברתם יעדכן את האתר אוטומטית.

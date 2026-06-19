@@ -12,9 +12,10 @@ COPY . .
 
 ENV NODE_ENV=production
 ENV PORT=3000
-# תיקיית הנתונים — מומלץ למפות אליה Volume קבוע (ראו README)
+# תיקיית הנתונים — ב-Railway מגדירים Railway Volume על נתיב זה (לא משתמשים
+# בפקודת VOLUME של Docker, ש-Railway אינו תומך בה). בספקים אחרים אפשר למפות
+# כל Volume/Disk לנתיב הזה. ראו README.
 ENV DATA_DIR=/app/data
-VOLUME ["/app/data"]
 
 EXPOSE 3000
 CMD ["npm", "start"]
