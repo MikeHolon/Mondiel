@@ -366,5 +366,13 @@ app.get("*", (req, res) => {
 });
 
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`\n  ⚽  מערכת הניחושים למונדיאל פועלת על http://localhost:${PORT}\n`);
+  // בענן (Railway/Render) מציגים את הכתובת הציבורית לשיתוף; מקומית — localhost.
+  const publicUrl = process.env.RAILWAY_PUBLIC_DOMAIN
+    ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+    : process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
+  const isCloud = publicUrl.startsWith("https://");
+  console.log(`\n  ⚽  מערכת הניחושים למונדיאל פועלת!`);
+  console.log(`      ${isCloud ? "כתובת לשיתוף עם החברים" : "כתובת מקומית"}: ${publicUrl}`);
+  if (isCloud) console.log(`      שתפו את הכתובת + קוד ההצטרפות והם נכנסים מכל מכשיר.`);
+  console.log(`      (האזנה פנימית על פורט ${PORT})\n`);
 });
