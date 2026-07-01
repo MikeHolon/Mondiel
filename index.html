@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#16a34a">
+  <title>סל חכם — רשימת קניות לסופר</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-row">
+      <h1>🛒 סל חכם</h1>
+      <div class="header-actions">
+        <button id="btn-live" class="chip" title="שיתוף לייב">🔴 לייב</button>
+        <button id="btn-settings" class="icon-btn" title="הגדרות">⚙️</button>
+      </div>
+    </div>
+    <div id="live-bar" class="live-bar hidden">
+      <span id="live-status">מתחבר…</span>
+      <span id="live-peers"></span>
+      <button id="btn-share-room" class="mini-btn">📤 שתף קישור</button>
+      <button id="btn-leave-room" class="mini-btn danger">ניתוק</button>
+    </div>
+  </header>
+
+  <!-- שורת הוספה -->
+  <div class="add-bar">
+    <input id="add-input" type="text" inputmode="text" autocomplete="off"
+           placeholder='למשל: 2 ק"ג עגבניות, 3 חלב, קוטג׳…'>
+    <button id="btn-add" class="primary-btn">הוסף</button>
+    <button id="btn-scan" class="icon-btn big" title="סריקת ברקוד">📷</button>
+    <button id="btn-paste-list" class="icon-btn big" title="הדבקת רשימה שלמה">📋</button>
+  </div>
+  <div id="suggestions" class="suggestions hidden"></div>
+
+  <!-- סרגל מצב חלוקה -->
+  <div class="split-bar">
+    <label class="switch-label">
+      <input type="checkbox" id="split-toggle">
+      <span>🧑‍🤝‍🧑 מצב חלוקה בסופר</span>
+    </label>
+    <div id="split-filters" class="split-filters hidden">
+      <button class="chip filter-chip active" data-who="all">הכל</button>
+      <button class="chip filter-chip" data-who="me" id="chip-me">אני</button>
+      <button class="chip filter-chip" data-who="partner" id="chip-partner">בת/בן זוג</button>
+      <button class="chip filter-chip" data-who="none">לא שויך</button>
+    </div>
+  </div>
+
+  <!-- סיכום -->
+  <div id="summary" class="summary"></div>
+
+  <!-- הרשימה לפי קטגוריות -->
+  <main id="list-container" class="list-container"></main>
+
+  <div id="empty-state" class="empty-state">
+    <p>🧺 הרשימה ריקה</p>
+    <p class="muted">הוסיפו מוצרים בהקלדה, בסריקת ברקוד 📷 או בהדבקת רשימה שלמה 📋</p>
+  </div>
+
+  <footer class="app-footer">
+    <button id="btn-clear-checked" class="mini-btn">🧹 נקה מסומנים</button>
+    <button id="btn-compare" class="mini-btn accent">💰 השוואת מחירים</button>
+    <button id="btn-export" class="mini-btn">📤 ייצוא (וואטסאפ)</button>
+  </footer>
+
+  <!-- ===== דיאלוגים ===== -->
+
+  <!-- סריקת ברקוד -->
+  <dialog id="dlg-scan">
+    <div class="dlg-head"><h2>📷 סריקת ברקוד</h2><button class="dlg-close" data-close>✕</button></div>
+    <video id="scan-video" playsinline muted></video>
+    <p id="scan-status" class="muted">מכוון את המצלמה לברקוד המוצר…</p>
+    <div class="dlg-row">
+      <input id="scan-manual" type="text" inputmode="numeric" placeholder="או הקלידו ברקוד ידנית">
+      <button id="btn-scan-manual" class="primary-btn">חפש</button>
+    </div>
+  </dialog>
+
+  <!-- הדבקת רשימה -->
+  <dialog id="dlg-paste">
+    <div class="dlg-head"><h2>📋 הדבקת רשימה</h2><button class="dlg-close" data-close>✕</button></div>
+    <p class="muted">שורה לכל מוצר. אפשר לציין כמות ויחידה, למשל: <bdi>"2 ק"ג עגבניות"</bdi>, <bdi>"חלב 3"</bdi>, <bdi>"500 גרם גבינה צהובה"</bdi></p>
+    <textarea id="paste-text" rows="8" placeholder="עגבניות 2 ק&quot;ג&#10;3 חלב&#10;לחם&#10;500 גרם פסטרמה"></textarea>
+    <button id="btn-paste-add" class="primary-btn wide">הוסף הכל לרשימה</button>
+  </dialog>
+
+  <!-- עריכת פריט -->
+  <dialog id="dlg-item">
+    <div class="dlg-head"><h2 id="item-title">עריכת מוצר</h2><button class="dlg-close" data-close>✕</button></div>
+    <label>שם המוצר<input id="item-name" type="text"></label>
+    <div class="dlg-row">
+      <label class="grow">כמות<input id="item-qty" type="number" min="0" step="0.1"></label>
+      <label class="grow">יחידה<select id="item-unit"></select></label>
+    </div>
+    <label>קטגוריה<select id="item-cat"></select></label>
+    <label>מי קונה?
+      <select id="item-who">
+        <option value="none">לא משנה</option>
+        <option value="me">אני</option>
+        <option value="partner">בת/בן זוג</option>
+      </select>
+    </label>
+    <label>הערה<input id="item-note" type="text" placeholder='למשל: "רק אם יש במבצע"'></label>
+    <div class="dlg-row">
+      <button id="btn-item-save" class="primary-btn grow">שמור</button>
+      <button id="btn-item-delete" class="mini-btn danger">🗑️ מחק</button>
+    </div>
+  </dialog>
+
+  <!-- השוואת מחירים -->
+  <dialog id="dlg-compare">
+    <div class="dlg-head"><h2>💰 השוואת מחירים ברשתות</h2><button class="dlg-close" data-close>✕</button></div>
+    <p class="muted">הערכת עלות הסל לפי מחירון הדגמה מובנה (מחירים אמיתיים משתנים בין סניפים).
+       לבדיקה מדויקת לחצו על מוצר — ייפתח חיפוש באתר <a href="https://chp.co.il" target="_blank" rel="noopener">CHP</a> המבוסס על נתוני שקיפות המחירים הרשמיים.</p>
+    <div id="compare-results"></div>
+  </dialog>
+
+  <!-- הגדרות -->
+  <dialog id="dlg-settings">
+    <div class="dlg-head"><h2>⚙️ הגדרות</h2><button class="dlg-close" data-close>✕</button></div>
+    <label>השם שלי<input id="set-my-name" type="text" placeholder="מייק"></label>
+    <label>שם בת/בן הזוג<input id="set-partner-name" type="text" placeholder="אשתי"></label>
+    <label class="switch-label"><input type="checkbox" id="set-auto-cat" checked><span>זיהוי קטגוריה אוטומטי</span></label>
+    <button id="btn-settings-save" class="primary-btn wide">שמור</button>
+    <hr>
+    <button id="btn-clear-all" class="mini-btn danger wide">🗑️ מחיקת כל הרשימה</button>
+  </dialog>
+
+  <!-- שיתוף לייב -->
+  <dialog id="dlg-live">
+    <div class="dlg-head"><h2>🔴 קניות לייב ביחד</h2><button class="dlg-close" data-close>✕</button></div>
+    <p class="muted">שני טלפונים, רשימה אחת מסונכרנת בזמן אמת: כל סימון ✔ או הוספה מופיעים מיד גם אצל השני.</p>
+    <button id="btn-create-room" class="primary-btn wide">➕ פתח חדר חדש</button>
+    <div class="dlg-row">
+      <input id="join-code" type="text" placeholder="קוד חדר (למשל SAL-1234)">
+      <button id="btn-join-room" class="primary-btn">הצטרף</button>
+    </div>
+    <p class="muted small">הסנכרון עובר דרך שרת MQTT ציבורי עם קוד חדר אקראי — לא לשתף מידע רגיש ברשימה.</p>
+  </dialog>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/sync.js"></script>
+  <script src="js/scanner.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+  </script>
+</body>
+</html>

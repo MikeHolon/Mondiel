@@ -1,0 +1,14 @@
+{
+  "name": "סל חכם — רשימת קניות לסופר",
+  "short_name": "סל חכם",
+  "description": "רשימת קניות חכמה: סריקת ברקוד, קטגוריות, קניות לייב ביחד והשוואת מחירים ברשתות בישראל",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f4f6f4",
+  "theme_color": "#16a34a",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
